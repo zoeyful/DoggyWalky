@@ -1,0 +1,12 @@
+{
+  "name": "DoggyWalky",
+  "displayName": "DoggyWalky",
+  "expo": {
+    "name": "DoggyWalky",
+    "slug": "DoggyWalky",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
