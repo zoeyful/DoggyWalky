@@ -4,9 +4,13 @@
   "expo": {
     "name": "DoggyWalky",
     "slug": "DoggyWalky",
+    "plugins": [
+      "@config-plugins/react-native-ble-plx"
+    ],
     "version": "1.0.0",
     "assetBundlePatterns": [
       "**/*"
     ]
   }
+
 }
