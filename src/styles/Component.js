@@ -46,7 +46,7 @@ export const ComponentStyle = StyleSheet.create({
         zIndex: 100,
         width: "100%",
         flexDirection: 'row',
-        justifyContent: "center"
+        justifyContent: "center",
     },
     textStyle: {
         alignSelf: 'center'

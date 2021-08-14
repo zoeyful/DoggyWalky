@@ -28,7 +28,7 @@ export default class App extends React.Component{
       return(
           <Router>
               <Scene key="root">
-                {AppScene("login", Login, "Login", false)}
+                {AppScene("login", Login, "Login", true)}
                 {AppScene("register", Register, "Register", false)}
                 {AppScene("accountinfo", AccountInfo, "Account Info", false)}
                 {AppScene("main", Main, "Main", false)}
@@ -37,7 +37,7 @@ export default class App extends React.Component{
                 {AppScene("petprofile", PetProfile, "Pet Profile", false)}
                 {AppScene("dietdetail", DietDetail, "Diet Detail", false)}
                 {AppScene("walkdetail", WalkDetail, "Walk Detail", false)}
-                {AppScene("newwalk", NewWalk, "New Walk", true)}
+                {AppScene("newwalk", NewWalk, "New Walk", false)}
                 {AppScene("walkfinish", WalkFinish, "Walk Finish", false)}
 
               </Scene>
