@@ -3,7 +3,7 @@ import {StyleSheet} from "react-native"
 export const ComponentStyle = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: '#F0F0F0',
         alignItems: 'center',
         justifyContent: 'center',
         width: "100%"
@@ -82,7 +82,7 @@ export const ComponentStyle = StyleSheet.create({
         justifyContent: 'center',
     },
     chartStyle: {
-        marginVertical: 8,
-        borderRadius: 16
+        borderRadius: 16,
+        backgroundColor: '#B9D4FE',
     },
 });

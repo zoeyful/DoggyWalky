@@ -28,13 +28,13 @@ export default class App extends React.Component{
       return(
           <Router>
               <Scene key="root">
-                {AppScene("login", Login, "Login", true)}
+                {AppScene("login", Login, "Login", false)}
                 {AppScene("register", Register, "Register", false)}
                 {AppScene("accountinfo", AccountInfo, "Account Info", false)}
                 {AppScene("main", Main, "Main", false)}
                 {AppScene("duringwalk", DuringWalk, "During Walk", false)}
                 {AppScene("petadd", PetAdd, "Pet Add", false)}
-                {AppScene("petprofile", PetProfile, "Pet Profile", false)}
+                {AppScene("petprofile", PetProfile, "Pet Profile", true)}
                 {AppScene("dietdetail", DietDetail, "Diet Detail", false)}
                 {AppScene("walkdetail", WalkDetail, "Walk Detail", false)}
                 {AppScene("newwalk", NewWalk, "New Walk", false)}

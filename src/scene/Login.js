@@ -39,6 +39,7 @@ export default class Login extends React.Component{
                 Actions.main()
             }else{
                 window.alert(LoginFailMessage)
+                this.setState({id: "", password: ""})
             }
         })
         .catch(error => console.log('error', error));
@@ -50,7 +51,7 @@ export default class Login extends React.Component{
         console.log(this.context)
         return (
             <View
-                style={styles.container}
+                style={{height: '100%'}}
             >
                 <KeyboardAwareScrollView 
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -63,33 +64,35 @@ export default class Login extends React.Component{
                     <View style={styles.img}>
                         <Image source={require("../img/logo.png")} style={styles.imageComponent}/>
                     </View>
-                    <TextInput
-                        placeholder = "username"
-                        autoCapitalize = "none"
-                        style={ComponentStyle.textInputStyle}
-                        value={this.state.id}
-                        onChangeText={text => this.onIDChange(text)}
-                        paddingLeft={13}/>
-                    <TextInput
-                        placeholder = "password"
-                        autoCapitalize = "none"
-                        secureTextEntry = {true}
-                        style={ComponentStyle.textInputStyle}
-                        value={this.state.password}
-                        onChangeText={text => this.onPasswordChange(text)}
-                        onSubmitEditing ={this.onLoginPressed}
-                        paddingLeft={13}
-                        // onFocus={(event) => {
-                        //     this._scrollToInput(ReactNative.findNodeHandle(event.target))
-                        // }}
-                    />
-                    <TouchableOpacity style={styles.loginButton} onPress={this.onLoginPressed}>
-                        <Text style={styles.loginText}>Login</Text>
-                    </TouchableOpacity>
+                    <View style={styles.inputContainer}>
+                        <TextInput
+                            placeholder = "username"
+                            autoCapitalize = "none"
+                            style={styles.textInputStyle}
+                            value={this.state.id}
+                            onChangeText={text => this.onIDChange(text)}
+                            paddingLeft={13}/>
+                        <TextInput
+                            placeholder = "password"
+                            autoCapitalize = "none"
+                            secureTextEntry = {true}
+                            style={styles.textInputStyle}
+                            value={this.state.password}
+                            onChangeText={text => this.onPasswordChange(text)}
+                            onSubmitEditing ={this.onLoginPressed}
+                            paddingLeft={13}
+                            // onFocus={(event) => {
+                            //     this._scrollToInput(ReactNative.findNodeHandle(event.target))
+                            // }}
+                        />
+                        <TouchableOpacity style={styles.loginButton} onPress={this.onLoginPressed}>
+                            <Text style={styles.loginText}>Login</Text>
+                        </TouchableOpacity>
+                    </View>
                 </KeyboardAwareScrollView>
-            <View style={styles.bottomView}>
-                <Text onPress={()=>Actions.register()} style={styles.bottomViewText}>Don't have an account? Sign Up</Text>
-            </View>
+                <View style={styles.bottomView}>
+                    <Text onPress={()=>Actions.register()} style={styles.bottomViewText}>Don't have an account? Sign Up</Text>
+                </View>
         </View>
         );
     }
@@ -97,17 +100,36 @@ export default class Login extends React.Component{
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        marginTop: '5%',
         alignItems: 'center',
         justifyContent: 'center',
-        height: "10%",
-
+        backgroundColor: '#F0F0F0',
+        height: '90%',
+    },
+    textInputStyle: {
+        height: 40, 
+        width: "80%", 
+        borderColor: 'gray', 
+        borderWidth: 2,
+        backgroundColor: "white",
+        marginBottom: 20,
+    },
+    inputContainer:{
+        width: '90%', 
+        justifyContent: 'center', 
+        flexDirection: 'column', 
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        borderRadius: 19,
+        paddingTop: '20%',
+        paddingBottom: '20%',
+        marginTop: '15%',
     },
     img: {
+        height: '15%',
         width: '100%',
         alignItems: 'center',
         justifyContent: 'center',
-        marginBottom: 60,
     },
     imageComponent: {
         resizeMode: 'contain',
@@ -117,8 +139,8 @@ const styles = StyleSheet.create({
     bottomView:{
         position: 'absolute',
         bottom: 0,
-        height: 65,
-        backgroundColor: '#7DFDFE',
+        height: '7%',
+        backgroundColor: '#B9D4FE',
         width: '100%',
         alignItems: 'center',
         justifyContent: 'center',
@@ -126,17 +148,15 @@ const styles = StyleSheet.create({
     bottomViewText:{
         fontSize: 15,
     },
-    loginButton:{
-        backgroundColor: '#4BA7E2',
-        width: '70%',
-        alignItems: 'center',
-        borderColor: 'gray',
-        borderWidth: 2,
-        paddingTop: 9,
-        paddingBottom: 9,
+    loginButtonText:{
+        color: '#fff',
     },
-    loginText:{
-        color: "white",
-        fontWeight: 'bold',
-    }
+    loginButton:{
+        width: '80%',
+        height: 60,
+        backgroundColor: '#609EFF',
+        borderRadius: 10,
+        alignItems: 'center',        
+        justifyContent: 'center',
+    },
   });

@@ -4,7 +4,7 @@ import { Text, View, TextInput, StyleSheet, TouchableOpacity, Image } from 'reac
 import {RegisterFailMessage, PasswordMatchingFailedMessage, RegisterIDFailMessage, getOption, ServerIP, uploadOption} from '../constants'
 import ZoeyButton from '../component/ZoeyButton';
 import {LoginStyles} from '../styles/LoginStyle';
-import {ComponentStyle} from '../styles/Component';
+import {Profile} from '../styles/Profile';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import * as ImagePicker from 'expo-image-picker';
 
@@ -104,34 +104,39 @@ export default class Register extends React.Component{
             <KeyboardAwareScrollView
                 contentContainerStyle={LoginStyles.container}
             >
-                <View style={styles.headerContainer}>
+                <View style={Profile.headerContainer}>
+                    <View style={Profile.backButton}>
+                        <TouchableOpacity onPress={() => Actions.login()}>
+                            <Text>Back</Text>
+                        </TouchableOpacity>
+                    </View>
                     <View style={{paddingTop: 50}}>
                         {this.state.selectedImage.uri === "" ? 
-                            <View style={styles.circleContainer}></View>
+                            <View style={Profile.circleContainer}></View>
                             :
-                            <View style={styles.circleContainer}>
-                                <Image source={{uri: this.state.selectedImage.uri}} style={styles.imageStyle} />
+                            <View style={Profile.circleContainer}>
+                                <Image source={{uri: this.state.selectedImage.uri}} style={Profile.imageStyle} />
                             </View>
                         }
                     </View>
-                    <View style={styles.buttonContainer}>
-                        <TouchableOpacity style={styles.button} onPress={this.onCameraPressed}>
-                            <Text style={styles.buttonText}>Camera</Text>
+                    <View style={Profile.buttonContainer}>
+                        <TouchableOpacity style={Profile.button} onPress={this.onCameraPressed}>
+                            <Text style={Profile.buttonText}>Camera</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.button} onPress={this.onGalleryPressed}>
-                            <Text style={styles.buttonText}>Add Photo</Text>
+                        <TouchableOpacity style={Profile.button} onPress={this.onGalleryPressed}>
+                            <Text style={Profile.buttonText}>Add Photo</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.button} onPress={this.removePictureButtonClicked}>
-                            <Text style={styles.buttonText}>Reset</Text>
+                        <TouchableOpacity style={Profile.button} onPress={this.removePictureButtonClicked}>
+                            <Text style={Profile.buttonText}>Reset</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
-                <View style={styles.container}>
-                    <View style={styles.inputContainer}>
+                <View style={Profile.container}>
+                    <View style={Profile.inputContainer}>
                         <TextInput
                             placeholder = "ID"
                             autoCapitalize = "none"
-                            style={styles.textInputStyle}
+                            style={Profile.textInputStyle}
                             value={this.state.id}
                             onChangeText={text => this.onIDChange(text)}
                             paddingLeft={13}/>
@@ -139,7 +144,7 @@ export default class Register extends React.Component{
                             placeholder = "password"
                             autoCapitalize = "none"
                             secureTextEntry = {true}
-                            style={styles.textInputStyle}
+                            style={Profile.textInputStyle}
                             value={this.state.password}
                             onChangeText={text => this.onPasswordChange(text)}
                             paddingLeft={13}
@@ -148,7 +153,7 @@ export default class Register extends React.Component{
                             placeholder = "re-password"
                             autoCapitalize = "none"
                             secureTextEntry = {true}
-                            style={this.state.password === this.state.repassword ? styles.textInputStyle : styles.missMatchTextInputStyle}
+                            style={this.state.password === this.state.repassword ? Profile.textInputStyle : Profile.missMatchTextInputStyle}
                             value={this.state.repassword}
                             onChangeText={text => this.onRepasswordChange(text)}
                             paddingLeft={13}
@@ -157,7 +162,7 @@ export default class Register extends React.Component{
                             placeholder = "name"
                             autoCapitalize = "none"
                             secureTextEntry = {true}
-                            style={styles.textInputStyle}
+                            style={Profile.textInputStyle}
                             value={this.state.name}
                             onChangeText={text => this.setState({name: text})}
                             paddingLeft={13}
@@ -166,25 +171,25 @@ export default class Register extends React.Component{
                             placeholder = "phone number"
                             autoCapitalize = "none"
                             secureTextEntry = {true}
-                            style={styles.textInputStyle}
+                            style={Profile.textInputStyle}
                             value={this.state.phonenumber}
                             onChangeText={text => this.setState({phonenumber: text})}
                             paddingLeft={13}
                         />
-                        <View style={styles.genderButtonView}>
-                            <TouchableOpacity style={this.state.gender === "F" ? styles.activeButton : styles.button} onPress={()=>this.genderButtonClicked("F")}>
+                        <View style={Profile.genderButtonView}>
+                            <TouchableOpacity style={this.state.gender === "F" ? Profile.activeButton : Profile.button} onPress={()=>this.genderButtonClicked("F")}>
                                 <Text>Female</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={this.state.gender === "M" ? styles.activeButton : styles.button} onPress={()=>this.genderButtonClicked("M")}>
+                            <TouchableOpacity style={this.state.gender === "M" ? Profile.activeButton : Profile.button} onPress={()=>this.genderButtonClicked("M")}>
                                 <Text>Male</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={this.state.gender === "O" ? styles.activeButton : styles.button} onPress={()=>this.genderButtonClicked("O")}>
+                            <TouchableOpacity style={this.state.gender === "O" ? Profile.activeButton : Profile.button} onPress={()=>this.genderButtonClicked("O")}>
                                 <Text>Others</Text>
                             </TouchableOpacity>
                         </View>
                         
-                        <TouchableOpacity style={styles.registerButton} onPress={this.onRegisterPressed}>
-                            <Text style={styles.registerButtonText}>Register</Text>
+                        <TouchableOpacity style={Profile.registerButton} onPress={this.onRegisterPressed}>
+                            <Text style={Profile.registerButtonText}>Register</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -192,107 +197,3 @@ export default class Register extends React.Component{
         );
     }
 }
-const styles = StyleSheet.create({
-    headerContainer: {
-        flex: 0.3,
-        backgroundColor: '#F0F0F0',
-        alignItems: 'center',
-        justifyContent: 'space-evenly',
-        width: "100%",
-    },
-    container: {
-        flex: 0.7,
-        backgroundColor: '#F0F0F0',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: "100%"
-    },
-    buttonContainer:{
-        flexDirection: 'row',
-        width: '100%',
-        justifyContent: 'space-around',
-    },
-    genderButtonView: {
-        flexDirection: 'row',
-        width: '80%',
-        justifyContent: 'space-between',
-    },
-    registerButton:{
-        width: '80%',
-        height: 60,
-        backgroundColor: '#609EFF',
-        borderRadius: 10,
-        alignItems: 'center',        
-        marginTop: 40,
-        justifyContent: 'center',
-    },
-    registerButtonText:{
-        color: '#fff',
-    },
-    button: {
-        width: "25%",
-        height: 35,
-        backgroundColor: '#C4C4C4',
-        borderRadius: 8,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    imageStyle:{
-        borderRadius: 60,
-        height: 120,
-        width: 120,
-    },
-    buttonText: {
-        color: '#3A3A3A',
-    },
-    activeButton: {
-        width: "25%",
-        height: 30,
-        backgroundColor: 'pink',
-        borderColor: "pink",
-        borderRadius: 8,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    inputContainer:{
-        width: '90%', 
-        justifyContent: 'center', 
-        flexDirection: 'column', 
-        alignItems: 'center',
-        backgroundColor: '#fff',
-        borderRadius: 19,
-        height: '90%',
-    },
-    textInputStyle: {
-        height: 40, 
-        width: "80%", 
-        borderColor: 'gray', 
-        borderWidth: 2,
-        backgroundColor: "white",
-        marginBottom: 20,
-    },
-    missMatchTextInputStyle: {
-        height: 40, 
-        width: "80%", 
-        borderColor: 'red', 
-        borderWidth: 2,
-        backgroundColor: "white",
-        marginBottom: 20,
-    },
-    circle: {
-        textAlign: 'center',
-        fontSize:20 - 2 * 10, //... One for top and one for bottom alignment
-        lineHeight:20 - (Platform.OS === 'ios' ? 2 * 10 : 10), //... One for top and one for bottom alignment
-
-    },
-    circleContainer: {
-        alignItems:'center',
-        justifyContent:'center',
-        backgroundColor:'#C4C4C4',
-        borderColor: '#C4C4C4',
-        width: 120,	
-        height: 120,
-        borderRadius: 100,
-        borderWidth: 10,
-    },
-})
