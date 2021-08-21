@@ -35,7 +35,17 @@ export default class PetProfile extends React.Component{
         .then(response => response.json())
         .then(result => {
             result.data["loading"] = false
-            this.setState(result.data)})
+            this.setState(result.data)
+            fetch(`${ServerIP}list/meal/${this.context.id}`, getOption)
+                .then(response => response.json())
+                .then(result => {
+                    let mealList = []
+                    for(let i = 0; i < result.data.length; i++){
+                        let item = {value: result.data[i].id, label: `${result.data[i].item}: ${result.data[i].weight}g`}
+                        mealList.push(item)
+                    }
+                    this.setState({mealList: mealList})})
+            })
     }
     onGalleryPressed = async () =>{
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -58,19 +68,24 @@ export default class PetProfile extends React.Component{
         .catch(error => console.log('error', error));
     }
     onDietAddPressed = () =>{
-        var formdata = new FormData();
-        formdata.append("pet", "d8dbfd7d-4ea1-49ba-9fca-1ffbe67b9828");
-        formdata.append("meal", this.state.selectedMeal.value);
-        fetch(`${ServerIP}detail/mealrecord`, uploadOption('POST', formdata))
-        .then(response => response.json())
-        .then(result => {
-            if(result['status']  === "okay"){
-                this.componentDidMount()
-            }else{
-                window.alert(RegisterFailMessage)
-            }
-        })
-        .catch(error => console.log('error', error));
+        if(this.state.selectedMeal){
+            var formdata = new FormData();
+            formdata.append("pet", this.context.pet.id);
+            formdata.append("meal", this.state.selectedMeal.value);
+            fetch(`${ServerIP}detail/mealrecord`, uploadOption('POST', formdata))
+            .then(response => response.json())
+            .then(result => {
+                if(result['status']  === "okay"){
+                    this.componentDidMount()
+                }else{
+                    window.alert(RegisterFailMessage)
+                }
+            })
+            .catch(error => console.log('error', error));
+        }
+        else{
+            window.alert("Select your meal!")
+        }
     }
     mealSelected = (item) =>{
         this.setState({selectedMeal: item})

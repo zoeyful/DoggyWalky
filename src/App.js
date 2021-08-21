@@ -34,8 +34,8 @@ export default class App extends React.Component{
                 {AppScene("main", Main, "Main", false)}
                 {AppScene("duringwalk", DuringWalk, "During Walk", false)}
                 {AppScene("petadd", PetAdd, "Pet Add", false)}
-                {AppScene("petprofile", PetProfile, "Pet Profile", true)}
-                {AppScene("dietdetail", DietDetail, "Diet Detail", false)}
+                {AppScene("petprofile", PetProfile, "Pet Profile", false)}
+                {AppScene("dietdetail", DietDetail, "Diet Detail", true)}
                 {AppScene("walkdetail", WalkDetail, "Walk Detail", false)}
                 {AppScene("newwalk", NewWalk, "New Walk", false)}
                 {AppScene("walkfinish", WalkFinish, "Walk Finish", false)}

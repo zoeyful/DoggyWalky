@@ -109,8 +109,8 @@ const styles = StyleSheet.create({
     textInputStyle: {
         height: 40, 
         width: "80%", 
-        borderColor: 'gray', 
-        borderWidth: 2,
+        borderBottomColor: 'gray',
+        borderBottomWidth: 2,
         backgroundColor: "white",
         marginBottom: 20,
     },
@@ -154,6 +154,7 @@ const styles = StyleSheet.create({
     loginButton:{
         width: '80%',
         height: 60,
+        marginTop: 20,
         backgroundColor: '#609EFF',
         borderRadius: 10,
         alignItems: 'center',        

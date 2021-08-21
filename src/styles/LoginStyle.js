@@ -7,6 +7,6 @@ export const LoginStyles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         height: "100%",
-
+        backgroundColor: '#F0F0F0',
     },
 });
