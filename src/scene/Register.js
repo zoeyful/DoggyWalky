@@ -21,22 +21,23 @@ export default class Register extends React.Component{
             phonenumber: "",
             selectedImage: {uri : ""},
         }
-        this.onIDChange = this.onIDChange.bind(this)
-        this.onPasswordChange = this.onPasswordChange.bind(this)
-        this.onRepasswordChange = this.onRepasswordChange.bind(this)
-        this.onRegisterPressed = this.onRegisterPressed.bind(this)
     }
-    onIDChange(text){
+    onIDChange = (text) => {
         this.setState({id: text})
     }
-    onPasswordChange(text){
+    onPasswordChange = (text) => {
         this.setState({password: text})
     }
-    onRepasswordChange(text){
+    onRepasswordChange = (text) => {
         this.setState({repassword: text})
     }
     removePictureButtonClicked = () => {
         this.setState({selectedImage: {uri : ""}})
+    }
+    onPhoneNumberChange = (text) => {
+        if(/^\+?\d+$/.test(text) || text.length === 0){
+            this.setState({phonenumber: text})
+        }
     }
     onCameraPressed = async () =>{
         let result = await ImagePicker.launchCameraAsync({
@@ -62,7 +63,7 @@ export default class Register extends React.Component{
         }
         console.log(result)
     }
-    onRegisterPressed(){
+    onRegisterPressed = () => {
         fetch(`${ServerIP}register?id=` + this.state.id, getOption)
         .then(response => response.json())
         .then(result => {
@@ -160,8 +161,6 @@ export default class Register extends React.Component{
                         />
                         <TextInput
                             placeholder = "name"
-                            autoCapitalize = "none"
-                            secureTextEntry = {true}
                             style={Profile.textInputStyle}
                             value={this.state.name}
                             onChangeText={text => this.setState({name: text})}
@@ -170,10 +169,9 @@ export default class Register extends React.Component{
                         <TextInput
                             placeholder = "phone number"
                             autoCapitalize = "none"
-                            secureTextEntry = {true}
                             style={Profile.textInputStyle}
                             value={this.state.phonenumber}
-                            onChangeText={text => this.setState({phonenumber: text})}
+                            onChangeText={text => this.onPhoneNumberChange(text)}
                             paddingLeft={13}
                         />
                         <View style={Profile.genderButtonView}>

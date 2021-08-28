@@ -31,11 +31,11 @@ export default class App extends React.Component{
                 {AppScene("login", Login, "Login", false)}
                 {AppScene("register", Register, "Register", false)}
                 {AppScene("accountinfo", AccountInfo, "Account Info", false)}
-                {AppScene("main", Main, "Main", false)}
+                {AppScene("main", Main, "Main", true)}
                 {AppScene("duringwalk", DuringWalk, "During Walk", false)}
                 {AppScene("petadd", PetAdd, "Pet Add", false)}
                 {AppScene("petprofile", PetProfile, "Pet Profile", false)}
-                {AppScene("dietdetail", DietDetail, "Diet Detail", true)}
+                {AppScene("dietdetail", DietDetail, "Diet Detail", false)}
                 {AppScene("walkdetail", WalkDetail, "Walk Detail", false)}
                 {AppScene("newwalk", NewWalk, "New Walk", false)}
                 {AppScene("walkfinish", WalkFinish, "Walk Finish", false)}

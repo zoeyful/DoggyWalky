@@ -60,7 +60,7 @@ export const Profile = StyleSheet.create({
     },
     activeButton: {
         width: "25%",
-        height: 30,
+        height: 35,
         backgroundColor: 'pink',
         borderColor: "pink",
         borderRadius: 8,

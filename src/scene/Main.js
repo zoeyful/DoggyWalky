@@ -1,8 +1,8 @@
 import { Actions } from 'react-native-router-flux';
 import React from 'react';
-import {Text, View, StyleSheet, Dimensions} from 'react-native';
+import {Text, View, StyleSheet, Dimensions, Image} from 'react-native';
 import ZoeyButton from '../component/ZoeyButton';
-import {getOption, ServerIP, uploadOption, activityDot, weightDot} from '../constants';
+import {getOption, ServerIP, uploadOption, activityDot, weightDot, ImageIP} from '../constants';
 import {LoginStyles} from '../styles/LoginStyle';
 import {ScrollView, TextInput, TouchableOpacity} from 'react-native-gesture-handler';
 import {ComponentStyle} from '../styles/Component';
@@ -29,10 +29,10 @@ export default class Main extends React.Component{
             clickedDateString: new Date().toISOString().slice(0, 10),
             weightList: [],
             mealrecord: [],
+            activitylist: [],
         }
     }
     onPetItemButtonClicked = (item) =>{
-        // console.log(item)
         if(item.name === "-"){
             alert("Pick a pet")
         }else{
@@ -41,77 +41,62 @@ export default class Main extends React.Component{
         }
     }
     setPickerSelected = (item) =>{
-        // console.log(item)
         if(item.value === "+"){
             Actions.petadd()
         }else{
             this.setState({currentPet: item})
         }
     }
-    componentDidMount(){
-        // console.log(`${ServerIP}list/pet/${this.props.id}`)
-        fetch(`${ServerIP}list/pet/${this.context.id}`, getOption)
-        .then(response => response.json())
-        .then(result => {
-            if(result.data.length === 0){
-                Actions.petadd()
+    async componentDidMount(){
+        const petList = await fetch(`${ServerIP}list/pet/${this.context.id}`, getOption)
+        const petListJson = await petList.json()
+        if(petListJson.data.length === 0){
+            Actions.petadd()
+        }
+        for(let i = 0; i < petListJson.data.length; i++){
+            petListJson.data[i].label = petListJson.data[i].name
+            petListJson.data[i].value = petListJson.data[i].name
+        }
+        petListJson.data.push({label: "+", value:"+"})
+        let currentPet = petListJson.data[0]
+
+        const activityList = await fetch(`${ServerIP}list/activity/${this.context.id}`, getOption)
+        const activityJson = await activityList.json()
+        let calendarActivityList = {}
+        for(let i = 0; i < activityJson.data.length; i++){
+            let date = activityJson.data[i].created_date.split("T")[0]
+            calendarActivityList[date] = {dots: [activityDot]}
+        }
+
+        const petDetail = await fetch(`${ServerIP}detail/pet?id=${currentPet.id}`, getOption)
+        const petDetailJson = await petDetail.json()
+        petDetailJson.data["loading"] = false
+        for(let i = 0; i < petDetailJson.data.weight_list.length; i++){
+            let date = petDetailJson.data.weight_list[i].created_date.split("T")[0]
+            if(calendarActivityList[date] === undefined){
+                calendarActivityList[date] = {dots: [weightDot]} 
+            } else {
+                let itemCheck = _.find(calendarActivityList[date].dots, function(item){return item.key === "weight"})
+                if(itemCheck === undefined){
+                    calendarActivityList[date].dots.push(weightDot)
+                } 
             }
-            for(let i = 0; i < result.data.length; i++){
-                result.data[i].label = result.data[i].name
-                result.data[i].value = result.data[i].name
-            }
-            result.data.push({label: "+", value:"+"})
-            this.setState({ 
-                pet_list: result.data, currentPet: result.data[0]})
-            fetch(`${ServerIP}list/activity/${this.context.id}`, getOption)
-            .then(response => response.json())
-            .then(result => {
-                let mealList = []
-                let calendarActivityList = {}
-                for(let i = 0; i < result.data.length; i++){
-                    let date = result.data[i].created_date.split("T")[0]
-                    calendarActivityList[date] = {dots: [activityDot]}
-                }
-                let activitylist = result.data
-                // calendarActivityList["2021-05-11"] = {dots:[activityDot, weightDot]}
-                // calendarActivityList["2021-05-10"] = {dots:[weightDot]}
-                fetch(`${ServerIP}list/meal/${this.context.id}`, getOption)
-                .then(response => response.json())
-                .then(result => {
-                    for(let i = 0; i < result.data.length; i++){
-                        let item = {value: result.data[i].id, label: `Food: ${result.data[i].item}, Amount: ${result.data[i].weight}`}
-                        mealList.push(item)
-                    }
-                    this.setState({activitylist: activitylist, loading: false, mealList: mealList})
-                    fetch(`${ServerIP}detail/pet?id=d8dbfd7d-4ea1-49ba-9fca-1ffbe67b9828`, getOption)
-                    .then(response => response.json())
-                    .then(result => {
-                        result.data["loading"] = false
-                        for(let i = 0; i < result.data.weight_list.length; i++){
-                            let date = result.data.weight_list[i].created_date.split("T")[0]
-                            if(calendarActivityList[date] === undefined){
-                                calendarActivityList[date] = {dots: [weightDot]} 
-                            } else {
-                                let itemCheck = _.find( calendarActivityList[date].dots, function(item){ return item.key === "weight"} )
-                                if( itemCheck === undefined){
-                                    calendarActivityList[date].dots.push(weightDot)
-                                }
-                            }
-                        }
-                    this.setState({weightList : result.data.weight_list, calendarActivityList: calendarActivityList})})
-                    fetch(`${ServerIP}detail/mealrecord?id=d8dbfd7d-4ea1-49ba-9fca-1ffbe67b9828`, getOption)
-                    .then(response => response.json())
-                    .then(result => {
-                        this.setState({mealrecord: result.data})
-                    })
-                })
-                
-               
-            })
+        }
+
+        const mealRecord = await fetch(`${ServerIP}detail/mealrecord?id=${currentPet.id}`, getOption)
+        const mealRecordJson = await mealRecord.json()
+        
+        this.setState({
+            pet_list: petListJson.data, 
+            currentPet: currentPet,
+            activitylist: activityJson.data,
+            loading: false,
+            weightList : petDetailJson.data.weight_list,
+            calendarActivityList: calendarActivityList,
+            mealrecord: mealRecordJson.data,
         })
     }
     render(){
-        console.log(this.context)
         if(this.state.loading === true){
             return(
                 <View style={LoginStyles.container}>
@@ -121,27 +106,47 @@ export default class Main extends React.Component{
         }else{ 
             let self = this
             let weightItem = _.findLast(this.state.weightList, function(item){return item.created_date.split("T")[0] === self.state.clickedDateString})
-            console.log(this.state.pet_list)
+            console.log(this.state.currentPet)
             return (
                 <View style={LoginStyles.container}>
-                    <View style={ComponentStyle.dropDownRowView1}>
-                        <ZoeyButton title={this.state.currentPet.name} onPress={() => this.onPetItemButtonClicked(this.state.currentPet)}/>
+                    <View style={styles.mainHeader}>
+                        <TouchableOpacity style={styles.petProfileBackground} onPress={() => this.onPetItemButtonClicked(this.state.currentPet)}>
+                            <Image 
+                                source={
+                                    this.state.currentPet.profile_img === 'no image' ?
+                                    require('../img/dogProfile.png')
+                                    :
+                                    {uri: `${ImageIP}${this.state.currentPet.profile_img}`}
+                                } 
+                                style={styles.petProfileBackground}
+                            />
+                        </TouchableOpacity>
                         <DropDownPicker
                             items={
                                 this.state.pet_list
                             }
                             placeholder = "Choose your pet"
                             defaultValue={this.state.country}
-                            containerStyle={ComponentStyle.dropDownContainer}
+                            containerStyle={styles.dropDownContainer}
                             style={ComponentStyle.dropDownStyle}
                             itemStyle={ComponentStyle.dropDownItemStyle}
                             labelStyle={{textAlign: 'center'}}
                             dropDownStyle={ComponentStyle.dropDownStyle}
                             onChangeItem={item => this.setPickerSelected(item)}
                         />
-                        <ZoeyButton title="Account Info" onPress={()=>Actions.accountinfo()} />
+                        <TouchableOpacity style={styles.petProfileBackground} onPress={()=>Actions.accountinfo()}>
+                            <Image 
+                                source={
+                                    this.state.currentPet.profile_img === 'no image' ?
+                                    require('../img/personProfile.png')
+                                    :
+                                    {uri: `${ImageIP}${this.state.currentPet.profile_img}`}
+                                } 
+                                style={styles.petProfileBackground}
+                            />
+                        </TouchableOpacity>
                     </View>
-                    <View>
+                    <View style={styles.calendarContainer}>
                         <Calendar
                             markedDates={
                                 this.state.calendarActivityList
@@ -152,20 +157,20 @@ export default class Main extends React.Component{
                                 selectedDayTextColor: 'red',
                                 todayTextColor: '#00adf5',
                             }}
-                            style={{width: windowWidth}} // height: windowHeight/2
+                            style={{width: windowWidth, height: '100%'}} // height: windowHeight/2
                             selected={this.state.clickedDateString}
                             onDayPress={(day) => {this.setState({clickedDateString: day.dateString})}}
                             enableSwipeMonths={true}
                         />
                     </View>
-                    <View>
+                    <View style={styles.weightContainer}>
                         {weightItem === undefined ?
-                        null
+                        <Text>No Weight Recorded</Text>
                         :
                         <Text>Weight: {weightItem.weight}kg</Text>
                         }
                     </View>
-                    <View style={DietStyles.scrollView}>
+                    {/* <View style={DietStyles.scrollView}>
                             <View style={{flexDirection: 'row'}}>
                                 <Text style={{width: '25%', textAlign: 'center'}}>Time</Text>
                                 <Text style={{width: '25%', textAlign: 'center'}}>Duration</Text>
@@ -187,31 +192,31 @@ export default class Main extends React.Component{
                                     
                                 })}
                             </ScrollView>
-                    </View>
-                    <View style={DietStyles.scrollView}>
-                            <View style={{flexDirection: 'row'}}>
-                                <Text style={{width: '33%', textAlign: 'center'}}>Time</Text>
-                                <Text style={{width: '33%', textAlign: 'center'}}>Food Name</Text>
-                                <Text style={{width: '33%', textAlign: 'center'}}>Amount</Text>
-                            </View>
-                            <ScrollView>
-                                {/* {this.state.mealrecord.map( (item, index) =>{
-                                    if(item.created_date.split("T")[0] === this.state.clickedDateString){
-                                        return(
-                                            <View style={{flexDirection: 'row', marginBottom: 5, marginTop: 5}} key={index}>
-                                                <Text style={{width: '33%', textAlign: 'center'}}>{item.created_date.split("T")[1]}</Text>
-                                                <Text style={{width: '33%', textAlign: 'center'}}>{item.item}</Text>
-                                                <Text style={{width: '33%', textAlign: 'center'}}>{item.weight}</Text>
-                                            </View>
-                                        )
-                                    }
-                                    
-                                })} */}
-                            </ScrollView>
+                    </View> */}
+                    <View style={styles.scrollView}>
+                        <View style={{flexDirection: 'row'}}>
+                            <Text style={{width: '33%', textAlign: 'center'}}>Time</Text>
+                            <Text style={{width: '33%', textAlign: 'center'}}>Food Name</Text>
+                            <Text style={{width: '33%', textAlign: 'center'}}>Amount</Text>
+                        </View>
+                        <ScrollView>
+                            {/* {this.state.mealrecord.map( (item, index) =>{
+                                if(item.created_date.split("T")[0] === this.state.clickedDateString){
+                                    return(
+                                        <View style={{flexDirection: 'row', marginBottom: 5, marginTop: 5}} key={index}>
+                                            <Text style={{width: '33%', textAlign: 'center'}}>{item.created_date.split("T")[1]}</Text>
+                                            <Text style={{width: '33%', textAlign: 'center'}}>{item.item}</Text>
+                                            <Text style={{width: '33%', textAlign: 'center'}}>{item.weight}</Text>
+                                        </View>
+                                    )
+                                }
+                                
+                            })} */}
+                        </ScrollView>
                     </View>
                     <View style={styles.bottomView}>
-                        <TouchableOpacity onPress={()=>Actions.duringwalk()} style={styles.circleContainer}>
-                            <Text style={styles.circle}>Start</Text>
+                        <TouchableOpacity onPress={()=>Actions.duringwalk()} style={styles.startRunningButton}>
+                            <Text>Start Running</Text>
                         </TouchableOpacity>
                     </View>
                     
@@ -222,30 +227,67 @@ export default class Main extends React.Component{
 }
 const styles = StyleSheet.create({
     bottomView:{
-        position: 'absolute',
-        bottom: 0,
-        height: 100,
         width: '100%',
         alignItems: 'center',
         justifyContent: 'center',
+        flex: 0.1,
+        flexDirection: 'row',
+        backgroundColor: 'pink',
+    },
+    weightContainer:{
+        flex: 0.05,
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    mainHeader: {
+        zIndex: 101,
+        width: "100%",
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        flex: 0.1,
+        paddingTop: '8%',
+    },
+    calendarContainer:{
+        flex: 0.45,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'yellow',
+    },
+    scrollView: {
+        flex: 0.3,
+        backgroundColor: '#fff',
+        borderRadius: 19,
+        width: "80%",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    dropDownContainer:{
+        height: 45, 
+        width: '50%',
     },
     bottomViewText:{
         fontSize: 15,
     },
-    circle: {
-        textAlign: 'center',
-        fontSize:20 - 2 * 10, //... One for top and one for bottom alignment
-        lineHeight:20 - (Platform.OS === 'ios' ? 2 * 10 : 10), //... One for top and one for bottom alignment
-
-    },
-    circleContainer: {
-        alignItems:'center',
-        justifyContent:'center',
+    // circle: {
+    //     textAlign: 'center',
+    //     fontSize:20 - 2 * 10, //... One for top and one for bottom alignment
+    //     lineHeight:20 - (Platform.OS === 'ios' ? 2 * 10 : 10), //... One for top and one for bottom alignment
+    // },
+    startRunningButton: {
+        // alignItems:'center',
+        // justifyContent:'center',
         backgroundColor:'#7DFDFE',
-        borderColor: '#7DFDFE',
-        width: 80,	
-        height: 80,
-        borderRadius: 80,
-        borderWidth: 10,
-    }
+        width: '100%',
+    },
+    petProfileBackground: {
+        backgroundColor: '#C4C4C4',
+        borderColor: 'black',
+        width: 60,
+        height: 60,
+        borderRadius: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
 })

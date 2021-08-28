@@ -91,6 +91,11 @@ export default class PetProfile extends React.Component{
         this.setState({selectedMeal: item})
         console.log(item)
     }
+    onPetWeightChange = (text) => {
+        if(/^[0-9]*\.?[0-9]*$/.test(text) || text.length === 0){
+            this.setState({petWeight: text})
+        }
+    }
     onPetWeightAddPressed(){
         var formdata = new FormData();
         formdata.append("pet", this.context.pet.id);
@@ -236,7 +241,7 @@ export default class PetProfile extends React.Component{
                                 autoCapitalize = "none"
                                 style={styles.weightInputStyle}
                                 value={this.state.petWeight}
-                                onChangeText={text => this.setState({petWeight: text})}
+                                onChangeText={text => this.onPetWeightChange(text)}
                                 paddingLeft={15}
                             />
                             <TouchableOpacity style={styles.weightRecordButton} onPress={() => this.onPetWeightAddPressed()}>
