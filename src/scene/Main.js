@@ -12,7 +12,7 @@ import {Calendar, CalendarList, Agenda} from 'react-native-calendars';
 import _ from 'lodash';
 import globalContext from '../globalContext';
 
-const windowWidth = Dimensions.get('window').width;
+const windowWidth = Dimensions.get('window').width*0.8;
 const windowHeight = Dimensions.get('window').height;
 
 export default class Main extends React.Component{
@@ -30,6 +30,7 @@ export default class Main extends React.Component{
             weightList: [],
             mealrecord: [],
             activitylist: [],
+            logType: 'activity',
         }
     }
     onPetItemButtonClicked = (item) =>{
@@ -40,11 +41,41 @@ export default class Main extends React.Component{
             Actions.petprofile()
         }
     }
-    setPickerSelected = (item) =>{
+    setPickerSelected = async (item) =>{
         if(item.value === "+"){
             Actions.petadd()
         }else{
-            this.setState({currentPet: item})
+            const activityList = await fetch(`${ServerIP}list/activity/${this.context.id}`, getOption)
+            const activityJson = await activityList.json()
+            let calendarActivityList = {}
+            for(let i = 0; i < activityJson.data.length; i++){
+                let date = activityJson.data[i].created_date.split("T")[0]
+                calendarActivityList[date] = {dots: [activityDot]}
+            }
+            const petDetail = await fetch(`${ServerIP}detail/pet?id=${item.id}`, getOption)
+            const petDetailJson = await petDetail.json()
+            petDetailJson.data["loading"] = false
+            for(let i = 0; i < petDetailJson.data.weight_list.length; i++){
+                let date = petDetailJson.data.weight_list[i].created_date.split("T")[0]
+                if(calendarActivityList[date] === undefined){
+                    calendarActivityList[date] = {dots: [weightDot]} 
+                } else {
+                    let itemCheck = _.find(calendarActivityList[date].dots, function(item){return item.key === "weight"})
+                    if(itemCheck === undefined){
+                        calendarActivityList[date].dots.push(weightDot)
+                    } 
+                }
+            }
+    
+            const mealRecord = await fetch(`${ServerIP}detail/mealrecord?id=${item.id}`, getOption)
+            const mealRecordJson = await mealRecord.json()
+            this.setState({
+                currentPet: item,
+                activitylist: activityJson.data,
+                weightList : petDetailJson.data.weight_list,
+                calendarActivityList: calendarActivityList,
+                mealrecord: mealRecordJson.data,
+            })
         }
     }
     async componentDidMount(){
@@ -157,7 +188,7 @@ export default class Main extends React.Component{
                                 selectedDayTextColor: 'red',
                                 todayTextColor: '#00adf5',
                             }}
-                            style={{width: windowWidth, height: '100%'}} // height: windowHeight/2
+                            style={{width: windowWidth, height: '100%', borderRadius: 19}} // height: windowHeight/2
                             selected={this.state.clickedDateString}
                             onDayPress={(day) => {this.setState({clickedDateString: day.dateString})}}
                             enableSwipeMonths={true}
@@ -170,15 +201,40 @@ export default class Main extends React.Component{
                         <Text>Weight: {weightItem.weight}kg</Text>
                         }
                     </View>
-                    {/* <View style={DietStyles.scrollView}>
-                            <View style={{flexDirection: 'row'}}>
+                    
+                    <View style={styles.scrollView}>
+                        {
+                            this.state.logType === 'meal' ?
+                            <View style={styles.logHeaderContainer}>
+                                <Text style={{width: '33%', textAlign: 'center'}}>Time</Text>
+                                <Text style={{width: '33%', textAlign: 'center'}}>Food Name</Text>
+                                <Text style={{width: '33%', textAlign: 'center'}}>Amount</Text>
+                            </View>
+                            :
+                            <View style={styles.logHeaderContainer}>
                                 <Text style={{width: '25%', textAlign: 'center'}}>Time</Text>
                                 <Text style={{width: '25%', textAlign: 'center'}}>Duration</Text>
                                 <Text style={{width: '25%', textAlign: 'center'}}>Distance</Text>
                                 <Text style={{width: '25%', textAlign: 'center'}}>Detail</Text>
                             </View>
-                            <ScrollView>
-                                {this.state.activitylist.map( (item, index) =>{
+                        }
+                        <ScrollView style={{height: '70%'}}>
+                            {
+                                this.state.logType === 'meal' ?
+                                this.state.mealrecord.map( (item, index) =>{
+                                    if(item.created_date.split("T")[0] === this.state.clickedDateString){
+                                        return(
+                                            <View style={{flexDirection: 'row', marginBottom: 5, marginTop: 5}} key={index}>
+                                                <Text style={{width: '33%', textAlign: 'center'}}>{item.created_date.split("T")[1]}</Text>
+                                                <Text style={{width: '33%', textAlign: 'center'}}>{item.item}</Text>
+                                                <Text style={{width: '33%', textAlign: 'center'}}>{item.weight}</Text>
+                                            </View>
+                                        )
+                                    }
+                                    
+                                })
+                                :
+                                this.state.activitylist.map( (item, index) =>{
                                     if(item.created_date.split("T")[0] === this.state.clickedDateString){
                                         return(
                                             <View style={{flexDirection: 'row', marginBottom: 5, marginTop: 5}} key={index}>
@@ -190,29 +246,21 @@ export default class Main extends React.Component{
                                         )
                                     }
                                     
-                                })}
-                            </ScrollView>
-                    </View> */}
-                    <View style={styles.scrollView}>
-                        <View style={{flexDirection: 'row'}}>
-                            <Text style={{width: '33%', textAlign: 'center'}}>Time</Text>
-                            <Text style={{width: '33%', textAlign: 'center'}}>Food Name</Text>
-                            <Text style={{width: '33%', textAlign: 'center'}}>Amount</Text>
-                        </View>
-                        <ScrollView>
-                            {/* {this.state.mealrecord.map( (item, index) =>{
-                                if(item.created_date.split("T")[0] === this.state.clickedDateString){
-                                    return(
-                                        <View style={{flexDirection: 'row', marginBottom: 5, marginTop: 5}} key={index}>
-                                            <Text style={{width: '33%', textAlign: 'center'}}>{item.created_date.split("T")[1]}</Text>
-                                            <Text style={{width: '33%', textAlign: 'center'}}>{item.item}</Text>
-                                            <Text style={{width: '33%', textAlign: 'center'}}>{item.weight}</Text>
-                                        </View>
-                                    )
-                                }
-                                
-                            })} */}
+                                })
+                            }
                         </ScrollView>
+                        <View style={styles.logButtonContainer}>
+                            <View style={styles.logButton}>
+                                <TouchableOpacity onPress={()=>this.setState({logType: 'activity'})}>
+                                    <Text style={this.state.logType === 'activity' ? styles.logButtonTextClicked : styles.logButtonText}>Activity Log</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <View style={styles.logButton}>
+                                <TouchableOpacity onPress={()=>this.setState({logType: 'meal'})}>
+                                    <Text style={this.state.logType === 'meal' ? styles.logButtonTextClicked : styles.logButtonText}>Meal Log</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
                     </View>
                     <View style={styles.bottomView}>
                         <TouchableOpacity onPress={()=>Actions.duringwalk()} style={styles.startRunningButton}>
@@ -231,8 +279,24 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         flex: 0.1,
+    },
+    logButtonContainer:{
         flexDirection: 'row',
-        backgroundColor: 'pink',
+        width: '100%',
+        height: '15%',
+        borderTopWidth: 1,
+        borderTopColor: 'gray',
+    },
+    logButtonText:{
+        color: 'gray',
+    },
+    logButton:{
+        width: '50%',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    logButtonTextClicked:{
+        fontWeight: 'bold'
     },
     weightContainer:{
         flex: 0.05,
@@ -249,11 +313,18 @@ const styles = StyleSheet.create({
         flex: 0.1,
         paddingTop: '8%',
     },
+    logHeaderContainer:{
+        flexDirection: 'row', 
+        height: '15%', 
+        justifyContent: 'center', 
+        alignItems: 'center',
+        borderBottomWidth: 1,
+        borderBottomColor: 'gray',
+    },
     calendarContainer:{
         flex: 0.45,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'yellow',
     },
     scrollView: {
         flex: 0.3,
@@ -270,16 +341,16 @@ const styles = StyleSheet.create({
     bottomViewText:{
         fontSize: 15,
     },
-    // circle: {
-    //     textAlign: 'center',
-    //     fontSize:20 - 2 * 10, //... One for top and one for bottom alignment
-    //     lineHeight:20 - (Platform.OS === 'ios' ? 2 * 10 : 10), //... One for top and one for bottom alignment
-    // },
     startRunningButton: {
-        // alignItems:'center',
-        // justifyContent:'center',
+        alignItems:'center',
+        justifyContent:'center',
         backgroundColor:'#7DFDFE',
-        width: '100%',
+        borderRadius: 12,
+        paddingTop: 15,
+        paddingBottom: 15,
+        paddingLeft: 40,
+        paddingRight: 40,
+
     },
     petProfileBackground: {
         backgroundColor: '#C4C4C4',

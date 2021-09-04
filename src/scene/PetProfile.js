@@ -26,6 +26,7 @@ export default class PetProfile extends React.Component{
             weight_list: [],
             loading: true,
             petProfileImage: "",
+            petWeight: '',
         }
     }
 
@@ -97,20 +98,25 @@ export default class PetProfile extends React.Component{
         }
     }
     onPetWeightAddPressed(){
-        var formdata = new FormData();
-        formdata.append("pet", this.context.pet.id);
-        formdata.append("weight", this.state.petWeight);
-        fetch(`${ServerIP}detail/weight`, uploadOption('POST', formdata))
-        .then(response => response.json())
-        .then(result => {
-            if(result['status']  === "okay"){
-                window.alert("Weight was added successfully")
-                this.componentDidMount()
-            }else{
-                window.alert(RegisterFailMessage)
-            }
-        })
-        .catch(error => console.log('error', error));
+        if(this.state.petWeight === ''){
+            window.alert("You need to input weight")
+        }
+        else{
+            var formdata = new FormData();
+            formdata.append("pet", this.context.pet.id);
+            formdata.append("weight", this.state.petWeight);
+            fetch(`${ServerIP}detail/weight`, uploadOption('POST', formdata))
+            .then(response => response.json())
+            .then(result => {
+                if(result['status']  === "okay"){
+                    window.alert("Weight was added successfully")
+                    this.componentDidMount()
+                }else{
+                    window.alert(RegisterFailMessage)
+                }
+            })
+            .catch(error => console.log('error', error));
+        }
     }
     onCameraPressed = async () =>{
         let result = await ImagePicker.launchCameraAsync({

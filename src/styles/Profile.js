@@ -36,7 +36,7 @@ export const Profile = StyleSheet.create({
         backgroundColor: '#609EFF',
         borderRadius: 10,
         alignItems: 'center',        
-        marginTop: 40,
+        marginTop: 50,
         justifyContent: 'center',
     },
     registerButtonText:{

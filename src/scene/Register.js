@@ -63,36 +63,63 @@ export default class Register extends React.Component{
         }
         console.log(result)
     }
-    onRegisterPressed = () => {
-        fetch(`${ServerIP}register?id=` + this.state.id, getOption)
-        .then(response => response.json())
-        .then(result => {
-            if(result['status'] === "okay"){
-                if(this.state.password === this.state.repassword){
-                    var formdata = new FormData();
-                    formdata.append("id", this.state.id);
-                    formdata.append("pw", this.state.password);
-                    formdata.append("name", this.state.name);
-                    formdata.append("gender", this.state.gender);
-                    formdata.append("phone_number", this.state.phonenumber);
-                    fetch(`${ServerIP}register`, uploadOption('POST', formdata))
-                    .then(response => response.json())
-                    .then(result => {
-                        if(result['status']  === "okay"){
-                            Actions.login()
-                        }else{
-                            window.alert(RegisterFailMessage)
-                        }
-                    })
-                    .catch(error => console.log('error', error));
-                }else{
-                    window.alert(PasswordMatchingFailedMessage)
-                }
-            }else{
-                window.alert(RegisterIDFailMessage)
-            }
+    onResetInfoPressed = () => {
+        this.setState({
+            id: '',
+            password: "",
+            repassword: "",
+            name: "",
+            gender: "",
+            phonenumber: "",
         })
-        .catch(error => console.log('error', error));
+    }
+    onRegisterPressed = () => {
+        if(this.state.id === ''){
+            window.alert("You need to provide ID")
+        }
+        else if(this.state.password === ''){
+            window.alert("You need to provide a password")
+        }
+        else if(this.state.name === ''){
+            window.alert("You need to provide your name")
+        }
+        else if(this.state.gender === ''){
+            window.alert("You need to provide your gender")
+        }
+        else if(this.state.phonenumber === ''){
+            window.alert("You need to provide your phone number")
+        }
+        else{
+            fetch(`${ServerIP}register?id=` + this.state.id, getOption)
+            .then(response => response.json())
+            .then(result => {
+                if(result['status'] === "okay"){
+                    if(this.state.password === this.state.repassword){
+                        var formdata = new FormData();
+                        formdata.append("id", this.state.id);
+                        formdata.append("pw", this.state.password);
+                        formdata.append("name", this.state.name);
+                        formdata.append("gender", this.state.gender);
+                        formdata.append("phone_number", this.state.phonenumber);
+                        fetch(`${ServerIP}register`, uploadOption('POST', formdata))
+                        .then(response => response.json())
+                        .then(result => {
+                            if(result['status']  === "okay"){
+                                Actions.login()
+                            }else{
+                                window.alert(RegisterFailMessage)
+                            }
+                        })
+                        .catch(error => console.log('error', error));
+                    }else{
+                        window.alert(PasswordMatchingFailedMessage)
+                    }
+                }else{
+                    window.alert(RegisterIDFailMessage)
+                }
+            })
+            .catch(error => console.log('error', error));
+        }
     }
     genderButtonClicked = (text)=> {
         this.setState({gender: text})
@@ -134,61 +161,69 @@ export default class Register extends React.Component{
                 </View>
                 <View style={Profile.container}>
                     <View style={Profile.inputContainer}>
-                        <TextInput
-                            placeholder = "ID"
-                            autoCapitalize = "none"
-                            style={Profile.textInputStyle}
-                            value={this.state.id}
-                            onChangeText={text => this.onIDChange(text)}
-                            paddingLeft={13}/>
-                        <TextInput
-                            placeholder = "password"
-                            autoCapitalize = "none"
-                            secureTextEntry = {true}
-                            style={Profile.textInputStyle}
-                            value={this.state.password}
-                            onChangeText={text => this.onPasswordChange(text)}
-                            paddingLeft={13}
-                        />
-                        <TextInput
-                            placeholder = "re-password"
-                            autoCapitalize = "none"
-                            secureTextEntry = {true}
-                            style={this.state.password === this.state.repassword ? Profile.textInputStyle : Profile.missMatchTextInputStyle}
-                            value={this.state.repassword}
-                            onChangeText={text => this.onRepasswordChange(text)}
-                            paddingLeft={13}
-                        />
-                        <TextInput
-                            placeholder = "name"
-                            style={Profile.textInputStyle}
-                            value={this.state.name}
-                            onChangeText={text => this.setState({name: text})}
-                            paddingLeft={13}
-                        />
-                        <TextInput
-                            placeholder = "phone number"
-                            autoCapitalize = "none"
-                            style={Profile.textInputStyle}
-                            value={this.state.phonenumber}
-                            onChangeText={text => this.onPhoneNumberChange(text)}
-                            paddingLeft={13}
-                        />
-                        <View style={Profile.genderButtonView}>
-                            <TouchableOpacity style={this.state.gender === "F" ? Profile.activeButton : Profile.button} onPress={()=>this.genderButtonClicked("F")}>
-                                <Text>Female</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={this.state.gender === "M" ? Profile.activeButton : Profile.button} onPress={()=>this.genderButtonClicked("M")}>
-                                <Text>Male</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={this.state.gender === "O" ? Profile.activeButton : Profile.button} onPress={()=>this.genderButtonClicked("O")}>
-                                <Text>Others</Text>
+                        <View style={{height: '92%', width: '100%', justifyContent: 'center', alignItems: 'center', paddingTop: 25}}>
+                            <TextInput
+                                placeholder = "ID"
+                                autoCapitalize = "none"
+                                style={Profile.textInputStyle}
+                                value={this.state.id}
+                                onChangeText={text => this.onIDChange(text)}
+                                paddingLeft={13}
+                            />
+                            <TextInput
+                                placeholder = "password"
+                                autoCapitalize = "none"
+                                secureTextEntry = {true}
+                                style={Profile.textInputStyle}
+                                value={this.state.password}
+                                onChangeText={text => this.onPasswordChange(text)}
+                                paddingLeft={13}
+                            />
+                            <TextInput
+                                placeholder = "re-password"
+                                autoCapitalize = "none"
+                                secureTextEntry = {true}
+                                style={this.state.password === this.state.repassword ? Profile.textInputStyle : Profile.missMatchTextInputStyle}
+                                value={this.state.repassword}
+                                onChangeText={text => this.onRepasswordChange(text)}
+                                paddingLeft={13}
+                            />
+                            <TextInput
+                                placeholder = "name"
+                                style={Profile.textInputStyle}
+                                value={this.state.name}
+                                onChangeText={text => this.setState({name: text})}
+                                paddingLeft={13}
+                            />
+                            <TextInput
+                                placeholder = "phone number"
+                                autoCapitalize = "none"
+                                style={Profile.textInputStyle}
+                                value={this.state.phonenumber}
+                                onChangeText={text => this.onPhoneNumberChange(text)}
+                                paddingLeft={13}
+                            />
+                            <View style={Profile.genderButtonView}>
+                                <TouchableOpacity style={this.state.gender === "F" ? Profile.activeButton : Profile.button} onPress={()=>this.genderButtonClicked("F")}>
+                                    <Text>Female</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={this.state.gender === "M" ? Profile.activeButton : Profile.button} onPress={()=>this.genderButtonClicked("M")}>
+                                    <Text>Male</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={this.state.gender === "O" ? Profile.activeButton : Profile.button} onPress={()=>this.genderButtonClicked("O")}>
+                                    <Text>Others</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <TouchableOpacity style={Profile.registerButton} onPress={this.onRegisterPressed}>
+                                <Text style={Profile.registerButtonText}>Register</Text>
                             </TouchableOpacity>
                         </View>
                         
-                        <TouchableOpacity style={Profile.registerButton} onPress={this.onRegisterPressed}>
-                            <Text style={Profile.registerButtonText}>Register</Text>
-                        </TouchableOpacity>
+                        <View style={{height: '8%', alignItems: 'center'}}>
+                            <TouchableOpacity onPress={this.onResetInfoPressed}>
+                                <Text>Reset</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </View>
             </KeyboardAwareScrollView>

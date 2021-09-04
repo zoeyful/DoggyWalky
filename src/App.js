@@ -31,9 +31,9 @@ export default class App extends React.Component{
                 {AppScene("login", Login, "Login", false)}
                 {AppScene("register", Register, "Register", false)}
                 {AppScene("accountinfo", AccountInfo, "Account Info", false)}
-                {AppScene("main", Main, "Main", true)}
+                {AppScene("main", Main, "Main", false)}
                 {AppScene("duringwalk", DuringWalk, "During Walk", false)}
-                {AppScene("petadd", PetAdd, "Pet Add", false)}
+                {AppScene("petadd", PetAdd, "Pet Add", true)}
                 {AppScene("petprofile", PetProfile, "Pet Profile", false)}
                 {AppScene("dietdetail", DietDetail, "Diet Detail", false)}
                 {AppScene("walkdetail", WalkDetail, "Walk Detail", false)}
